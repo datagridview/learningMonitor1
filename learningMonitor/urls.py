@@ -18,7 +18,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from dataFeedback import views
 from django.contrib import admin
 
-from dataFeedback.views import UserViewSet, ClipViewSet, api_root,HeartBeatViewSet,OperationViewSet,EmotionViewSet
+from dataFeedback.views import UserViewSet, ClipViewSet, api_root,HeartBeatViewSet,OperationViewSet,EmotionViewSet, MinutestimesViewSet,ProcessViewSet,StateViewSet
 from rest_framework import renderers
 
 clip_list = ClipViewSet.as_view({
@@ -55,6 +55,17 @@ emotion_detail = EmotionViewSet.as_view({
     'patch': 'partial_update',
     'delete': 'destroy'
 })
+process_list = ProcessViewSet.as_view({
+    'get': 'list',
+    'post': 'create'
+})
+
+process_detail = ProcessViewSet.as_view({
+    'get': 'retrieve',
+    'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy'
+})
 
 operation_list = OperationViewSet.as_view({
     'get': 'list',
@@ -62,6 +73,17 @@ operation_list = OperationViewSet.as_view({
 })
 
 operation_detail = OperationViewSet.as_view({
+    'get': 'retrieve',
+    'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy'
+})
+state_list = StateViewSet.as_view({
+    'get': 'list',
+    'post': 'create'
+})
+
+state_detail = StateViewSet.as_view({
     'get': 'retrieve',
     'put': 'update',
     'patch': 'partial_update',
@@ -75,6 +97,16 @@ user_detail = UserViewSet.as_view({
     'get': 'retrieve'
 })
 
+minutestimes_list = MinutestimesViewSet.as_view({
+    'get': 'list',
+    'post': 'create'
+})
+minutestimes_detail = MinutestimesViewSet.as_view({
+    'get': 'retrieve',
+    'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy'
+})
 # 
 urlpatterns = format_suffix_patterns([
     url(r'^api/$', api_root),
@@ -89,4 +121,10 @@ urlpatterns = format_suffix_patterns([
     url(r'^api/operations/(?P<pk>[0-9]+)/$', operation_detail, name='operation-detail'),
     url(r'^api/emotions/$', emotion_list, name='emotion-list'),
     url(r'^api/emotions/(?P<pk>[0-9]+)/$', emotion_detail, name='emotion-detail'),
+    url(r'^api/operationtimes/$', minutestimes_list, name='minutestimes-list'),
+    url(r'^api/operationtimes/(?P<pk>[0-9]+)/$', minutestimes_detail, name='minutestimes-detail'),
+    url(r'^api/processes/$', process_list, name='process-list'),
+    url(r'^api/processes/(?P<pk>[0-9]+)/$', process_detail, name='process-detail'),
+    url(r'^api/states/$', state_list, name='state-list'),
+    url(r'^api/states/(?P<pk>[0-9]+)/$', state_detail, name='state-detail'),
 ])

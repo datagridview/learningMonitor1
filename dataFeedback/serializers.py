@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from dataFeedback.models import Clip,HeartBeat,Emotion,Operation
+from dataFeedback.models import Clip,HeartBeat,Emotion,Operation,Minutetimes,Process,State
 from django.contrib.auth.models import User
 
 class HeartBeatSerializer(serializers.ModelSerializer):
@@ -23,18 +23,37 @@ class EmotionSerializer(serializers.ModelSerializer):
         model = Emotion
         fields = ('url','owner','clip','clip_outer_id','state','time')
 
+class ProcessSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+    clip_outer_id = serializers.ReadOnlyField(source='clip.clip_outer_id')
+    # clip_outer_id = serializers.ModelField(model_field=Clip._meta.get_field('clip_outer_id'))
+    class Meta:
+        model = Process
+        fields = ('url','owner','clip','clip_outer_id','flag','time','process_name')
+
+class StateSerializer(serializers.ModelSerializer):
+    clip_outer_id = serializers.ReadOnlyField(source='clip.clip_outer_id')
+    class Meta:
+        model = State
+        fields = ('url','clip','clip_outer_id','time','emotion','heartbeats','process_flag','process_name','operation_num')
+
 class MiniEmotionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Emotion
         fields = ('time','state')
 
+class MinutestimesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Minutetimes
+        fields = ('operation','time','times')
+
 class OperationSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     clip_outer_id = serializers.ReadOnlyField(source='clip.clip_outer_id')
+    minutestimes = MinutestimesSerializer(many=True, read_only=True)
     class Meta:
         model = Operation
-        fields = ('url','owner','clip','clip_outer_id','keypressed_num','mouseclicked_num','alloperation_num','content')
-
+        fields = ('url','owner','clip','clip_outer_id','id','minutestimes','keypressed_num','mouseclicked_num','alloperation_num','content')
 
 class ClipSerializer(serializers.HyperlinkedModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
@@ -46,10 +65,14 @@ class ClipSerializer(serializers.HyperlinkedModelSerializer):
     #  )
     heartbeats = MiniHeartBeatSerializer(many=True, read_only=True)
     emotions = MiniEmotionSerializer(many=True, read_only=True)
-    operations = OperationSerializer(many=True, read_only=True)
+    operations = OperationSerializer(many=True,read_only=True)
+    processes = ProcessSerializer(many=True,read_only=True)
     class Meta:
         model = Clip
-        fields = ('id','url','clip_outer_id','tested', 'owner', 'heartbeats','emotions','operations')   
+        fields = ('id','url','clip_outer_id','tested', 'owner', 'heartbeats','emotions','operations','processes')
+
+
+
 
 class UserSerializer(serializers.ModelSerializer):
     clips = serializers.HyperlinkedRelatedField(many=True,view_name='clip-detail', read_only=True)
